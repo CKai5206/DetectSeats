@@ -1,3 +1,4 @@
+
 import os
 import cv2
 import argparse
@@ -77,32 +78,34 @@ def processOutPuts(frame, outputs):
         height = box[3]
         if classIDs[i] == 0:
             countPerson += 1
-            # drawPred(frame, classIDs[i], confidences[i], left, top, left + width, top + height, (0, 0, 255))
+            drawPred(frame, classIDs[i], confidences[i], left, top, left + width, top + height, (0, 0, 255))
             targetCoordinates.append({
                 "object":"Person",
-                "leftTopCorner":(left ,top),
-                "rightBottomCorner":(left + width, top + height)
+                "lt_x":left,
+                "lt_y":top,
+                "rb_x":left + width,
+                "rb_y":top + height
             })
         
-    # info = [
-    #     ("Person", countPerson),
-    # ]
+    info = [
+        ("Person", countPerson),
+    ]
 
     # loop over the info tuples and draw them on our frame
-    # for index, (k, v) in enumerate(info):
-    #     text = "{}: {}".format(k, v)
-    #     cv2.putText(frame, text, ( 10, index * 20 + 20 ),
-    #                 cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
+    for index, (k, v) in enumerate(info):
+        text = "{}: {}".format(k, v)
+        cv2.putText(frame, text, ( 10, index * 20 + 20 ),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
     return targetCoordinates
 
 
-# def drawPred(frame, classID, conf, left, top, right, bottom, RGB):
-#     # Draw a bounding box.
-#     cv2.rectangle(frame, (left, top), (right, bottom), RGB)
-#     # Get the label for the class name and its confidence
-#     label = classes[classID] + ":" + "%.1f" % (conf * 100) + "%"
-#     #Display the label at the top of the bounding box
-#     cv2.putText(frame, label, (left, top), cv2.FONT_HERSHEY_DUPLEX, 0.6, RGB, 1)
+def drawPred(frame, classID, conf, left, top, right, bottom, RGB):
+    # Draw a bounding box.
+    cv2.rectangle(frame, (left, top), (right, bottom), RGB)
+    # Get the label for the class name and its confidence
+    label = classes[classID] + ":" + "%.1f" % (conf * 100) + "%"
+    #Display the label at the top of the bounding box
+    cv2.putText(frame, label, (left, top), cv2.FONT_HERSHEY_DUPLEX, 0.6, RGB, 1)
 
 def processImage(framePath):
 
@@ -118,13 +121,13 @@ def processImage(framePath):
     net.setInput(blob)
 
     outputs = net.forward(getOutputsNames(net))
-    personCoordinates = processOutPuts(frame, outputs)
+    peopleCoordinates = processOutPuts(frame, outputs)
 
     cv2.imshow("Person detection", frame)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
     import connectDB
-    connectDB.writePeopleCoordinates(personCoordinates)
+    connectDB.writePeopleCoordinates(peopleCoordinates)
     # keys = ['object', 'leftTopCorner', 'rightBottomCorner']
     # with open("outputs.csv", "w", newline = '') as csvfile:
     #     writer = csv.DictWriter(csvfile,keys)

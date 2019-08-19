@@ -16,3 +16,4 @@ def caculate():
         if (dx>=0) and (dy>=0):
             return dx*dy
     print(area(ra, rb))
+    connectDB.writeSeatsCounts()
