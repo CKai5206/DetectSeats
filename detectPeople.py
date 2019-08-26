@@ -1,4 +1,3 @@
-
 import os
 import cv2
 import argparse
@@ -94,8 +93,8 @@ def processOutPuts(frame, outputs):
     # loop over the info tuples and draw them on our frame
     for index, (k, v) in enumerate(info):
         text = "{}: {}".format(k, v)
-        cv2.putText(frame, text, ( 10, index * 20 + 20 ),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
+        cv2.putText(frame, text, ( 10, frame.shape[0] - (index * 20) - 30 ),
+                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
     return targetCoordinates
 
 
@@ -110,7 +109,8 @@ def drawPred(frame, classID, conf, left, top, right, bottom, RGB):
 def processImage(framePath):
 
     frame = cv2.imread(os.getcwd() + framePath)
-
+    frameName = framePath.split("\\")[-1]
+    
     # 將通過 blobFromImage 函數將其轉換爲神經網絡的輸入blob。
     # 在此過程中，它使用比例因子1/255 將圖像像素值縮放到0到1的目標範圍。
     # 它還將圖像的大小縮放爲給定的大小（416,416）而不進行裁剪。
@@ -126,16 +126,11 @@ def processImage(framePath):
     cv2.imshow("Person detection", frame)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+    cv2.imwrite("output\\image\\" + frameName, frame)
     import connectDB
     connectDB.writePeopleCoordinates(peopleCoordinates)
-    # keys = ['object', 'leftTopCorner', 'rightBottomCorner']
-    # with open("outputs.csv", "w", newline = '') as csvfile:
-    #     writer = csv.DictWriter(csvfile,keys)
-    #     writer.writeheader()
-    #     writer.writerows(personCoordinates)
-    #     csvfile.close()
-
-processImage(framePath = "\\media\\image\\01.jpg")
+    
+# processImage(framePath = "\\media\\image\\class.jpg")
 
 # def processVideo(videoPath):
 #     cap = cv2.VideoCapture(os.getcwd() + videoPath)
