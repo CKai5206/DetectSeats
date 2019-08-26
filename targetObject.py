@@ -7,7 +7,7 @@ class coordinates:
         self.rb_y = rb_y
 
 class person(coordinates):
-    def __init__(self, name, lt_x, lt_y, rb_x, rb_y, sit = false):
+    def __init__(self, name, lt_x, lt_y, rb_x, rb_y, sit):
         super(person, self).__init__(name, lt_x, lt_y, rb_x, rb_y)
         self.sit = sit
 class seat(coordinates):

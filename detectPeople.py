@@ -78,6 +78,7 @@ def processOutPuts(frame, outputs):
         if classIDs[i] == 0:
             countPerson += 1
             drawPred(frame, classIDs[i], confidences[i], left, top, left + width, top + height, (0, 0, 255))
+            
             targetCoordinates.append({
                 "object":"Person",
                 "lt_x":left,
@@ -122,15 +123,16 @@ def processImage(framePath):
 
     outputs = net.forward(getOutputsNames(net))
     peopleCoordinates = processOutPuts(frame, outputs)
-
+    
+    
     cv2.imshow("Person detection", frame)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-    cv2.imwrite("output\\image\\" + frameName, frame)
-    import connectDB
-    connectDB.writePeopleCoordinates(peopleCoordinates)
+    # cv2.imwrite("output\\image\\" + frameName, frame)
+    # import connectDB
+    # connectDB.writePeopleCoordinates(peopleCoordinates)
     
-# processImage(framePath = "\\media\\image\\class.jpg")
+processImage(framePath = "\\media\\image\\01.jpg")
 
 # def processVideo(videoPath):
 #     cap = cv2.VideoCapture(os.getcwd() + videoPath)
