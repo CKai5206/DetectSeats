@@ -55,6 +55,8 @@ def writePeopleCoordinates(peopleCoordinates):
     try:
         cursor = db.cursor()#建立資料庫游標
         for person in peopleCoordinates:
+            sql = "DELETE FROM person_coordinates"
+            cursor.execute(sql)
             sql = "INSERT INTO person_coordinates VALUES('%s',%d,%d,%d,%d)" \
                 %(person['object'], person['lt_x'], person['lt_y'], person['rb_x'], person['rb_y'])#下指令，皆用變數儲存
             cursor.execute(sql)
@@ -64,14 +66,31 @@ def writePeopleCoordinates(peopleCoordinates):
         db.close()#關閉DataBase 
 
 
-def writeSeatsCounts(seatsCounts):
+
+def getOldSeatsCounts():
     db = open_db()
     try:
         cursor = db.cursor()#建立資料庫游標
-        sql = ("UPDATE seats_counts SET Vacancy =" +str(seatsCounts)+ " \
+        
+        sql = ("select NowSeats from seats_counts" )#下指令，皆用變數儲存
+        cursor.execute(sql)
+        oldSeatsCount = cursor.fetchall()
+        
+        return oldSeatsCount[0]['NowSeats']
+    except Exception as e:
+        print("Exeception occured:{}".format(e))
+    finally:
+        db.close()#關閉DataBase 
+
+def writeSeatsCounts(seatsCounts, category):
+    db = open_db()
+    try:
+        cursor = db.cursor()#建立資料庫游標
+        sql = ("UPDATE seats_counts SET " +category+ " =" +str(seatsCounts)+ " \
          WHERE location = 'classRoom1'" )#下指令，皆用變數儲存
         cursor.execute(sql)
     except Exception as e:
         print("Exeception occured:{}".format(e))
     finally:
         db.close()#關閉DataBase 
+

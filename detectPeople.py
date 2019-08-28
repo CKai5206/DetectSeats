@@ -108,8 +108,8 @@ def drawPred(frame, classID, conf, left, top, right, bottom, RGB):
     cv2.putText(frame, label, (left, top), cv2.FONT_HERSHEY_DUPLEX, 0.6, RGB, 1)
 
 def processImage(framePath):
-
-    frame = cv2.imread(os.getcwd() + framePath)
+    print(os.getcwd() + framePath)
+    frame = cv2.imread(os.getcwd() + "\\"+framePath)
     frameName = framePath.split("\\")[-1]
     
     # 將通過 blobFromImage 函數將其轉換爲神經網絡的輸入blob。
@@ -126,13 +126,13 @@ def processImage(framePath):
     
     
     cv2.imshow("Person detection", frame)
-    cv2.waitKey(0)
+    cv2.waitKey(1000)
     cv2.destroyAllWindows()
-    # cv2.imwrite("output\\image\\" + frameName, frame)
-    # import connectDB
-    # connectDB.writePeopleCoordinates(peopleCoordinates)
     
-processImage(framePath = "\\media\\image\\01.jpg")
+    import connectDB
+    connectDB.writePeopleCoordinates(peopleCoordinates)
+    
+
 
 # def processVideo(videoPath):
 #     cap = cv2.VideoCapture(os.getcwd() + videoPath)

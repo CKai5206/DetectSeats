@@ -18,7 +18,7 @@ def caculateArea(seat, person):
         else:return False
 
 
-def caculate():
+def mergeCaculate():
     peopleCoordinates = connectDB.getPeopleCoordinates()
     seatsCoordinates = connectDB.getSeatsCoordinates()
     count = 0
@@ -32,5 +32,10 @@ def caculate():
                     count += 1
                     break
     return count
-connectDB.writeSeatsCounts(caculate())
-# print(caculate())
+
+def caculate():
+        seatsCount = mergeCaculate()
+        lastSeats = connectDB.getOldSeatsCounts()
+        print("seatsCount", seatsCount, "lastCount", lastSeats)
+        connectDB.writeSeatsCounts(lastSeats, "lastSeats")
+        connectDB.writeSeatsCounts(seatsCount,"NowSeats")
