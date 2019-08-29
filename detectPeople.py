@@ -5,7 +5,7 @@ import sys
 import numpy as np
 import pandas as pd
 import csv
-
+import connectDB
 
 # Initialize the parameters
 confThreshold = 0.6  #Confidence threshold
@@ -77,7 +77,7 @@ def processOutPuts(frame, outputs):
         height = box[3]
         if classIDs[i] == 0:
             countPerson += 1
-            # drawPred(frame, classIDs[i], confidences[i], left, top, left + width, top + height, (0, 0, 255))
+            drawPred(frame, classIDs[i], confidences[i], left, top, left + width, top + height, (0, 0, 255))
             
             targetCoordinates.append({
                 "object":"Person",
@@ -88,7 +88,7 @@ def processOutPuts(frame, outputs):
             })
         
     info = [
-        ("Person", countPerson),
+        ("Person", countPerson)
     ]
 
     # loop over the info tuples and draw them on our frame
@@ -134,31 +134,48 @@ def processImage(framePath):
     
 
 
-# def processVideo(videoPath):
-#     cap = cv2.VideoCapture(os.getcwd() + videoPath)
+def processVideo(videoPath):
+    cap = cv2.VideoCapture(os.getcwd() + videoPath)
+    from caculateSeats import caculate
+    outputFile = "outputVideo.mp4"
+    vid_writer = cv.VideoWriter(outputFile, cv.VideoWriter_fourcc('M','J','P','G'), 30, (round(cap.get(cv.CAP_PROP_FRAME_WIDTH)),round(cap.get(cv.CAP_PROP_FRAME_HEIGHT))))
+    while cap.isOpened():
+        # get frame from the video
+        hasFrame, frame = cap.read()
+        if hasFrame:
+            # Create a 4D blob from a frame.
+            blob = cv2.dnn.blobFromImage(frame, 1/255, (inpWidth, inpHeight), [0, 0, 0], 1, crop=False)
+            # Sets the input to the network
+            net.setInput(blob)
+            # Runs the forward pass to get output of the output layers
+            outputs = net.forward(getOutputsNames(net))
+            # Remove the bounding boxes with low confidence
+            personCoordinates = processOutPuts(frame, outputs)
+            connectDB.writePeopleCoordinates(2,personCoordinates)
 
-#     while cap.isOpened():
-#         # get frame from the video
-#         hasFrame, frame = cap.read()
-#         if hasFrame:
-#             # Create a 4D blob from a frame.
-#             blob = cv2.dnn.blobFromImage(frame, 1/255, (inpWidth, inpHeight), [0, 0, 0], 1, crop=False)
-#             # Sets the input to the network
-#             net.setInput(blob)
-#             # Runs the forward pass to get output of the output layers
-#             outputs = net.forward(getOutputsNames(net))
-#             # Remove the bounding boxes with low confidence
-#             personCoordinates = processOutPuts(frame, outputs)
-#             cv2.imshow("Person detection", frame)
-#             if cv2.waitKey(1) & 0xFF == ord('q'):
-#                 break
-#         elif not hasFrame:
-#             print("Done processing !!!")
-#             cv2.waitKey(3000)
-#             cap.release()
-#             cv2.destroyAllWindows()
-#             break
-#     for i in personCoordinates:
-#         print(i)
+            caculate("RenYanHall")
+
+            seatsList = connectDB.getSeatsCoordinates("test2")
+            for i in seatsList:
+                drawPred(frame, 57, 0.0, i.lt_x, i.lt_y, i.rb_x, i.rb_y, (0,255,0))
+            info = [
+                ("SeatCount", connectDB.getSeatsCounts('RenYanHall')),
+            ]
+            for index, (k, v) in enumerate(info):
+                text = "{}: {}".format(k, v)
+                cv2.putText(frame, text, ( 0 + (index * 30) + 250  , frame.shape[0] - (index * 20) - 30 ),
+                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            cv2.resizeWindow('detectSeats', 1080,960)
+            cv2.namedWindow("detectSeats", cv2.WINDOW_NORMAL)
+            cv2.imshow("Person detection", frame)
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+            vid_writer.write(frame.astype(np.uint8))
+        elif not hasFrame:
+            print("Done processing !!!")
+            cv2.waitKey(3000)
+            cap.release()
+            cv2.destroyAllWindows()
+            break
 
 # processVideo(videoPath = "\\media\\video\\class01.mp4")

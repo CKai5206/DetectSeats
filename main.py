@@ -48,22 +48,24 @@ def drawSeatsCoordinates(frame):
                 rb_x = i.rb_x
                 rb_y = i.rb_y
                 cv2.rectangle(frame, (lt_x, lt_y), (rb_x, rb_y), (255,0,0))
-        cv2.namedWindow("detectSeats", cv2.WINDOW_NORMAL)
-        cv2.resizeWindow('detectSeats', 1080,960)
-        cv2.imshow("detectSeats", frame)
-        cv2.waitKey(1)
-        cv2.imwrite(os.getcwd()+"\\output\\image\\classSeats2.jpg",frame)
-        cv2.destroyAllWindows()
+        # cv2.namedWindow("detectSeats", cv2.WINDOW_NORMAL)
+        # cv2.resizeWindow('detectSeats', 1080,960)
+        # cv2.imshow("detectSeats", frame)
+        # cv2.waitKey(1)
+        # cv2.imwrite(os.getcwd()+"\\output\\image\\classSeats2.jpg",frame)
+        # cv2.destroyAllWindows()
 def main():
         
         today, time = getCurrentTime()
         imagePath = getImageFile(today, time)
 # #     readPeopleSeatsCoordinates()
         from caculateSeats import caculate
-        from  detectPeople import processImage
-        for i in imagePath:
-                frame = processImage(i)
-                drawSeatsCoordinates(frame)
+        # from  detectPeople import processImage
+        # for i in imagePath:
+        #         frame = processImage(i)
+        #         drawSeatsCoordinates(frame)
+        from detectPeople import processVideo
+        processVideo("\\media\\20190601145504000.avi")
         # caculate("RenYanHall")
     
         # info = [

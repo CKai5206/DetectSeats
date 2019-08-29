@@ -118,10 +118,10 @@ def getSeatsCounts(locatoin):
     db = open_db()
     try:
         cursor = db.cursor()#建立資料庫游標
-        sql = ("select allSit,lastSeats from seats_counts where location Like ('%s') " %(locatoin) )#下指令，皆用變數儲存
+        sql = ("select allSit,NowSeats from seats_counts where location Like ('%s') " %(locatoin) )#下指令，皆用變數儲存
         cursor.execute(sql)
         seatsCount = cursor.fetchall()
-        return seatsCount[0]['allSit'] - seatsCount[0]['lastSeats']
+        return seatsCount[0]['allSit'] - seatsCount[0]['NowSeats']
     except Exception as e:
         print("Exeception occured:{}".format(e))
     finally:

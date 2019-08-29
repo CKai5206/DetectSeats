@@ -20,7 +20,7 @@ def caculateArea(seat, person):
 
 def mergeCaculate():
     peopleCoordinates = connectDB.getPeopleCoordinates()
-    seatsCoordinates = connectDB.getSeatsCoordinates("class_room_seats")
+    seatsCoordinates = connectDB.getSeatsCoordinates("test2")
     count = 0
     
     for seat in seatsCoordinates:
@@ -35,7 +35,7 @@ def mergeCaculate():
 
 def caculate(location):
         seatsCount = mergeCaculate()
-        lastSeats = connectDB.getOldSeatsCounts()
-        # print("seatsCount", seatsCount, "lastCount", lastSeats)
-        connectDB.writeSeatsCounts(lastSeats, "lastSeats",location)
+        # lastSeats = connectDB.getOldSeatsCounts()
+        
+        # connectDB.writeSeatsCounts(lastSeats, "lastSeats",location)
         connectDB.writeSeatsCounts(seatsCount,"NowSeats",location)
