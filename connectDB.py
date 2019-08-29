@@ -30,11 +30,11 @@ def getPeopleCoordinates():
     finally:
         db.close()#關閉DataBase 
 
-def getSeatsCoordinates():
+def getSeatsCoordinates(location):
     db = open_db()
     try:
         cursor = db.cursor()#建立資料庫游標
-        sql = ("select name, lt_x, lt_y, rb_x, rb_y from class_room_seats")#下指令，皆用變數儲存
+        sql = ("select name, lt_x, lt_y, rb_x, rb_y from " + str(location))#下指令，皆用變數儲存
         
         cursor.execute(sql)
         rows = cursor.fetchall()
@@ -50,22 +50,40 @@ def getSeatsCoordinates():
     finally:
         db.close()#關閉DataBase 
 
-def writePeopleCoordinates(peopleCoordinates):
+def writePeopleCoordinates(roomId, peopleCoordinates):
     db = open_db()
     try:
         cursor = db.cursor()#建立資料庫游標
-        for person in peopleCoordinates:
-            sql = "DELETE FROM person_coordinates"
+        sql = "DELETE FROM person_coordinates"
+        cursor.execute(sql)
+        
+        for person in peopleCoordinates:    
+            sql = "INSERT INTO person_coordinates VALUES(%d, '%s', %d, %d, %d, %d)" \
+                %(roomId, person['object'], person['lt_x'], person['lt_y'], person['rb_x'], person['rb_y'])#下指令，皆用變數儲存
             cursor.execute(sql)
-            sql = "INSERT INTO person_coordinates VALUES('%s',%d,%d,%d,%d)" \
-                %(person['object'], person['lt_x'], person['lt_y'], person['rb_x'], person['rb_y'])#下指令，皆用變數儲存
-            cursor.execute(sql)
+        
     except Exception as e:
         print("Exeception occured:{}".format(e))
     finally:
         db.close()#關閉DataBase 
 
-
+def writeSeatsCoordinates(roomName, seatsList):
+    db = open_db()
+    try:
+        cursor = db.cursor()#建立資料庫游標
+        sql = ("select id from class_room where name Like ('%s') " %roomName)
+        cursor.execute(sql)
+        roomID = cursor.fetchone()
+        for seat in seatsList:
+            print(seatsList.index(seat) + 57 ,roomID['id'], "0-0", "S" + str(seatsList.index(seat) + 1), seat.lt_x, seat.lt_y, seat.rb_x, seat.rb_y, "")   
+            sql = "INSERT INTO test2 VALUES(%d, %d, '%s','%s', %d, %d, %d, %d, '%s')" \
+                %(seatsList.index(seat) + 57 ,roomID['id'], "0-0", "S" + str(seatsList.index(seat) + 1), seat.lt_x, seat.lt_y, seat.rb_x, seat.rb_y, "")#下指令，皆用變數儲存
+            cursor.execute(sql)
+            print(1)
+    except Exception as e:
+        print("Exeception occured:{}".format(e))
+    finally:
+        db.close()#關閉DataBase 
 
 def getOldSeatsCounts():
     db = open_db()
@@ -82,13 +100,28 @@ def getOldSeatsCounts():
     finally:
         db.close()#關閉DataBase 
 
-def writeSeatsCounts(seatsCounts, category):
+
+
+def writeSeatsCounts(seatsCounts, category, location):
     db = open_db()
     try:
         cursor = db.cursor()#建立資料庫游標
         sql = ("UPDATE seats_counts SET " +category+ " =" +str(seatsCounts)+ " \
-         WHERE location = 'classRoom1'" )#下指令，皆用變數儲存
+         WHERE location = ('%s')" %location )#下指令，皆用變數儲存
         cursor.execute(sql)
+    except Exception as e:
+        print("Exeception occured:{}".format(e))
+    finally:
+        db.close()#關閉DataBase 
+
+def getSeatsCounts(locatoin):
+    db = open_db()
+    try:
+        cursor = db.cursor()#建立資料庫游標
+        sql = ("select allSit,lastSeats from seats_counts where location Like ('%s') " %(locatoin) )#下指令，皆用變數儲存
+        cursor.execute(sql)
+        seatsCount = cursor.fetchall()
+        return seatsCount[0]['allSit'] - seatsCount[0]['lastSeats']
     except Exception as e:
         print("Exeception occured:{}".format(e))
     finally:

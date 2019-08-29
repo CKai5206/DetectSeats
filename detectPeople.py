@@ -77,7 +77,7 @@ def processOutPuts(frame, outputs):
         height = box[3]
         if classIDs[i] == 0:
             countPerson += 1
-            drawPred(frame, classIDs[i], confidences[i], left, top, left + width, top + height, (0, 0, 255))
+            # drawPred(frame, classIDs[i], confidences[i], left, top, left + width, top + height, (0, 0, 255))
             
             targetCoordinates.append({
                 "object":"Person",
@@ -108,7 +108,7 @@ def drawPred(frame, classID, conf, left, top, right, bottom, RGB):
     cv2.putText(frame, label, (left, top), cv2.FONT_HERSHEY_DUPLEX, 0.6, RGB, 1)
 
 def processImage(framePath):
-    print(os.getcwd() + framePath)
+    # print(os.getcwd() + framePath)
     frame = cv2.imread(os.getcwd() + "\\"+framePath)
     frameName = framePath.split("\\")[-1]
     
@@ -124,13 +124,13 @@ def processImage(framePath):
     outputs = net.forward(getOutputsNames(net))
     peopleCoordinates = processOutPuts(frame, outputs)
     
-    
-    cv2.imshow("Person detection", frame)
-    cv2.waitKey(1000)
-    cv2.destroyAllWindows()
-    
+    # cv2.imshow("Person detection", frame)
+    # cv2.waitKey(50)
+    # cv2.destroyAllWindows()
     import connectDB
-    connectDB.writePeopleCoordinates(peopleCoordinates)
+    connectDB.writePeopleCoordinates(2,peopleCoordinates)
+    
+    return frame
     
 
 
